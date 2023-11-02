@@ -10,5 +10,5 @@ serde = { version = "1", features = ["std", "derive"] }
 toml = "0.8.6"
 
 [[bin]]
-name = "as"
+name = "als"
 path = "src/main.rs"

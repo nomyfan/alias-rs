@@ -5,13 +5,13 @@ const PWSH_SCRIPT: &str = include_str!("./pwsh.ps1");
 pub fn init(config: AliasConfig) {
     println!("{PWSH_SCRIPT}");
 
-    for (fn_name, value) in config.aliases.iter() {
-        match value {
-            Alias::Inline(inline) => {
-                println!("function {fn_name} {{ {inline} }}");
+    for (fn_name, alias_value) in config.aliases.iter() {
+        match alias_value {
+            Alias::Inline(value) => {
+                println!("function {fn_name} {{ {value} }}");
             }
-            Alias::Multi(multi) => {
-                let fn_body = multi.join(" ");
+            Alias::Multi(value) => {
+                let fn_body = value.join(" ");
                 println!("function {fn_name} {{ {fn_body} }}");
             }
             Alias::Object(object) => {
