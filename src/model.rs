@@ -1,10 +1,11 @@
-use serde::Deserialize;
 use std::collections::HashMap;
 use toml::{Table, Value};
 
-#[derive(Deserialize, Debug, Default)]
+pub type Aliases = HashMap<String, Alias>;
+
+#[derive(Debug, Default)]
 pub struct AliasConfig {
-    pub aliases: HashMap<String, Alias>,
+    pub aliases: Aliases,
 }
 
 impl AliasConfig {
@@ -24,7 +25,7 @@ impl AliasConfig {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug)]
 pub enum Alias {
     Inline(String),
     Multi(Vec<String>),
@@ -73,7 +74,7 @@ impl TryFrom<&Value> for Alias {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Debug)]
 pub enum AliasObjectValue {
     Inline(String),
     Multi(Vec<String>),

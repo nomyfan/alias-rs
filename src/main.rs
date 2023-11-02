@@ -3,7 +3,7 @@ mod model;
 
 use crate::model::AliasConfig;
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
 
     let config_path = dirs::home_dir().unwrap().join(".config").join("alias.toml");
@@ -16,9 +16,15 @@ fn main() {
         }
     };
 
-    let sub_command: &str = args.get(0).unwrap().as_ref();
-    match sub_command {
-        "init" => init::init(config, args.into_iter().skip(1).collect::<Vec<_>>()),
-        _ => unreachable!("Unknown command"),
+    let sub_command = args
+        .get(0)
+        .ok_or_else(|| anyhow::anyhow!("Usage: alias init <shell>"))?;
+    match sub_command.as_ref() {
+        "init" => {
+            init::init(config, args.into_iter().skip(1).collect::<Vec<_>>());
+        }
+        _ => anyhow::bail!("Unknown command"),
     }
+
+    Ok(())
 }

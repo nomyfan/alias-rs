@@ -1,3 +1,4 @@
+mod bash;
 mod pwsh;
 mod zsh;
 
@@ -11,6 +12,9 @@ pub(crate) fn init(config: AliasConfig, args: Vec<String>) {
         }
         "zsh" => {
             zsh::init(config);
+        }
+        "bash" => {
+            bash::init(config);
         }
         _ => unreachable!("Unsupported shell"),
     }

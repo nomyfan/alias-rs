@@ -26,6 +26,14 @@ Add this into your `.zshrc`.
 eval "$(als init zsh)"
 ```
 
+### bash
+
+Add this into your `.bashrc`
+
+```shell
+eval "$(als init bash)"
+```
+
 ## Alias definations
 
 ### Format
