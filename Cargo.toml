@@ -1,0 +1,19 @@
+[package]
+name = "alias-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+dirs = "5"
+serde = { version = "1", features = ["std", "derive"] }
+shlex = "1"
+toml = "0.8.6"
+
+[[bin]]
+name = "as"
+path = "src/main.rs"
+
+[[bin]]
+name = "as-shim"
+path = "src/shim.rs"
