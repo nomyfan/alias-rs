@@ -22,10 +22,6 @@ impl AliasConfig {
 
         Ok(Self { aliases })
     }
-
-    pub fn get_alias(&self, key: &str) -> Option<&Alias> {
-        self.aliases.get(key)
-    }
 }
 
 #[derive(Deserialize, Debug)]

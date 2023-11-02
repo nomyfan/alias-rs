@@ -1,6 +1,5 @@
 mod init;
 mod model;
-mod run;
 
 use crate::model::AliasConfig;
 
@@ -13,7 +12,6 @@ fn main() {
 
     let sub_command: &str = args.get(0).unwrap().as_ref();
     match sub_command {
-        "run" => run::run(config, args.into_iter().skip(1).collect::<Vec<_>>()),
         "init" => init::init(config, args.into_iter().skip(1).collect::<Vec<_>>()),
         _ => unreachable!("Unknown command"),
     }
