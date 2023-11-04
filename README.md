@@ -28,7 +28,7 @@ eval "$(als init zsh)"
 
 ### bash
 
-Add this into your `.bashrc`
+Add this into your `.bashrc`.
 
 ```shell
 eval "$(als init bash)"
@@ -57,7 +57,7 @@ zsh = "clear"
 
 [aliases.opengh]
 zsh = "node $HOME/.ss/JavaScript/opengh.mjs"
-powershell = "$js = (Join-Path $env:HOME -ChildPath .ss -AdditionalChildPath JavaScript,opengh.mjs); node $js $args"
+powershell = "node (Join-Path $env:HOME -ChildPath .ss -AdditionalChildPath JavaScript,opengh.mjs)"
 
 [aliases.rmrf]
 zsh = "rm -rf"
