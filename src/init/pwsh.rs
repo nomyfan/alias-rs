@@ -6,7 +6,8 @@ struct PwshVisitor {}
 
 impl AliasVisitor for PwshVisitor {
     fn visit<'a>(&mut self, (fn_name, fn_body): (&'a str, VisitorAliasValue<'a>)) {
-        println!("function {fn_name} {{ {fn_body} }}");
+        // @see https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_splatting
+        println!("function {fn_name} {{ {fn_body} @Args }}");
     }
 }
 
