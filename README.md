@@ -1,6 +1,6 @@
 # alias-rs
 
-A utility to manage aliases across platforms.
+A utility to manage aliases across shells.
 
 ## Installation
 
@@ -34,7 +34,9 @@ Add this into your `.bashrc`.
 eval "$(als init bash)"
 ```
 
-## Alias definations
+## Alias config 
+
+Put a config file in `~/.config/alias.toml`.
 
 ### Format
 
