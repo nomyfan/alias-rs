@@ -12,7 +12,7 @@ cargo install --git https://github.com/nomyfan/alias-rs
 
 ### PowerShell
 
-Add this into your `$USERPROFILE`.
+Add this into your `$PROFILE`.
 
 ```pwsh
 Invoke-Expression (&als init powershell | Out-String)
@@ -34,7 +34,7 @@ Add this into your `.bashrc`.
 eval "$(als init bash)"
 ```
 
-## Alias config 
+## Alias config
 
 Put a config file in `~/.config/alias.toml`.
 
@@ -59,7 +59,7 @@ zsh = "clear"
 
 [aliases.opengh]
 zsh = "node $HOME/.ss/JavaScript/opengh.mjs"
-powershell = "node (Join-Path $env:HOME -ChildPath .ss -AdditionalChildPath JavaScript,opengh.mjs)"
+powershell = "node (Join-Path $HOME -ChildPath .ss -AdditionalChildPath JavaScript,opengh.mjs)"
 
 [aliases.rmrf]
 zsh = "rm -rf"
