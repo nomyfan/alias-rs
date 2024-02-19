@@ -1,0 +1,103 @@
+name: ci
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-release:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-14, windows-latest]
+        include:
+          - os: ubuntu-latest
+            targets: "x86_64-unknown-linux-gnu,x86_64-unknown-linux-musl,aarch64-unknown-linux-musl,aarch64-unknown-linux-gnu"
+
+          - os: macos-14
+            targets: "x86_64-apple-darwin,aarch64-apple-darwin"
+
+          - os: windows-latest
+            targets: "x86_64-pc-windows-msvc"
+
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.targets }}
+
+      - name: Install zig
+        uses: korandoru/setup-zig@v1
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          zig-version: 0.11.0
+
+      - name: Install binstall
+        uses: cargo-bins/cargo-binstall@main
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Install zigbuild
+        run: cargo binstall -y cargo-zigbuild
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Build
+        shell: pwsh
+        run: |
+          ("${{ matrix.targets }}" -split ",") | ForEach-Object {
+            Write-Host "Building $_"
+            
+            if ("${{ matrix.os }}" -ne "ubuntu-latest") {
+              cargo build --verbose --release --target $_
+            } else {
+              cargo zigbuild --verbose --release --target $_
+            }
+          }
+
+      - name: List builds
+        shell: pwsh
+        run: |
+          Get-ChildItem (Join-Path . target)
+
+      - name: Archive artifacts
+        shell: pwsh
+        run: |
+          $isWin = "${{ matrix.os }}".StartsWith("windows-")
+          $ext = $isWin ? ".exe" : ""
+
+          ("${{ matrix.targets }}" -split ",") | ForEach-Object {
+            $binaryName = "als$ext"
+            $targetBinaryName = "als-$_"
+            Move-Item -Path (Join-Path . target $_ release $binaryName) -Destination (Join-Path . $targetBinaryName)
+
+            if ($isWin) {
+              Compress-Archive -Path (Join-Path -Path . $targetBinaryName) -DestinationPath ".\als-$_.zip"
+            } else {
+              tar -czf "./als-$_.tar.gz" $targetBinaryName
+            }
+
+            Remove-Item (Join-Path . $targetBinaryName)
+          }
+
+          echo "ARCHIVE_PATH=./als-*" >> $env:GITHUB_ENV
+
+      - name: List archive
+        shell: pwsh
+        run: |
+          Get-ChildItem .
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          draft: true
+          files: ${{ env.ARCHIVE_PATH }}
