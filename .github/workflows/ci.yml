@@ -76,11 +76,11 @@ jobs:
 
           ("${{ matrix.targets }}" -split ",") | ForEach-Object {
             $binaryName = "als$ext"
-            $targetBinaryName = "als-$_"
+            $targetBinaryName = "als-$_$ext"
             Move-Item -Path (Join-Path . target $_ release $binaryName) -Destination (Join-Path . $targetBinaryName)
 
             if ($isWin) {
-              Compress-Archive -Path (Join-Path -Path . $targetBinaryName) -DestinationPath ".\als-$_.zip"
+              Compress-Archive -Path (Join-Path . $targetBinaryName) -DestinationPath ".\als-$_.zip"
             } else {
               tar -czf "./als-$_.tar.gz" $targetBinaryName
             }
