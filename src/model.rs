@@ -24,7 +24,7 @@ impl AliasConfig {
         Ok(Self { aliases })
     }
 
-    pub fn visit_aliases<V>(&self, shell_name: &str, mut visitor: V)
+    pub fn visit_aliases<V>(&self, shell_name: &str, visitor: &mut V)
     where
         V: AliasVisitor,
     {
@@ -102,7 +102,7 @@ impl TryFrom<&Value> for AliasValue {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum AliasObjectValue {
     Inline(String),
     Multi(Vec<String>),
@@ -133,4 +133,102 @@ impl std::fmt::Display for VisitorAliasValue<'_> {
 
 pub trait AliasVisitor {
     fn visit<'a>(&mut self, alias: (&'a str, VisitorAliasValue<'a>));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const CONFIG: &str = r#"
+[aliases]
+c = "cargo"
+
+[aliases.xxx]
+bash = "echo bash"
+zsh = "echo zsh"
+
+"#;
+
+    struct TestAliasVisitor {
+        aliases: Vec<(String, AliasObjectValue)>,
+    }
+
+    impl TestAliasVisitor {
+        fn new() -> Self {
+            Self { aliases: vec![] }
+        }
+    }
+
+    impl TestAliasVisitor {
+        fn get(&self, name: &str) -> Option<&AliasObjectValue> {
+            self.aliases.iter().find(|(n, _)| n == name).map(|(_, v)| v)
+        }
+    }
+
+    impl AliasVisitor for TestAliasVisitor {
+        fn visit<'a>(&mut self, (name, value): (&'a str, VisitorAliasValue<'a>)) {
+            match value {
+                VisitorAliasValue::Inline(value) => {
+                    self.aliases.push((
+                        name.to_string(),
+                        AliasObjectValue::Inline(value.to_string()),
+                    ));
+                }
+                VisitorAliasValue::Multi(value) => {
+                    self.aliases
+                        .push((name.to_string(), AliasObjectValue::Multi(value.clone())));
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn visit_shared_alias() {
+        let config = AliasConfig::from_str(CONFIG).unwrap();
+
+        let mut visitor = TestAliasVisitor::new();
+        config.visit_aliases("bash", &mut visitor);
+        assert_eq!(
+            visitor.get("c").unwrap(),
+            &AliasObjectValue::Inline("cargo".to_string())
+        );
+
+        let mut visitor = TestAliasVisitor::new();
+        config.visit_aliases("zsh", &mut visitor);
+        assert_eq!(
+            visitor.get("c").unwrap(),
+            &AliasObjectValue::Inline("cargo".to_string())
+        );
+
+        let mut visitor = TestAliasVisitor::new();
+        config.visit_aliases("powershell", &mut visitor);
+        assert_eq!(
+            visitor.get("c").unwrap(),
+            &AliasObjectValue::Inline("cargo".to_string())
+        );
+    }
+
+    #[test]
+    fn visit_alias_by_shell_name() {
+        let config = AliasConfig::from_str(CONFIG).unwrap();
+
+        let mut visitor = TestAliasVisitor::new();
+        config.visit_aliases("bash", &mut visitor);
+
+        assert_eq!(
+            visitor.get("xxx").unwrap(),
+            &AliasObjectValue::Inline("echo bash".to_string())
+        );
+
+        let mut visitor = TestAliasVisitor::new();
+        config.visit_aliases("zsh", &mut visitor);
+        assert_eq!(
+            visitor.get("xxx").unwrap(),
+            &AliasObjectValue::Inline("echo zsh".to_string())
+        );
+
+        let mut visitor = TestAliasVisitor::new();
+        config.visit_aliases("powershell", &mut visitor);
+        assert_eq!(visitor.get("xxx"), None);
+    }
 }

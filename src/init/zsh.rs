@@ -14,5 +14,5 @@ impl AliasVisitor for ZshVisitor {
 pub fn init(config: AliasConfig) {
     println!("{ZSH_SCRIPT}");
 
-    config.visit_aliases("zsh", ZshVisitor {});
+    config.visit_aliases("zsh", &mut ZshVisitor {});
 }

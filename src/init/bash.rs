@@ -18,5 +18,5 @@ impl AliasVisitor for BashVisitor {
 pub fn init(config: AliasConfig) {
     println!("{BASH_SCRIPT}");
 
-    config.visit_aliases("bash", BashVisitor {});
+    config.visit_aliases("bash", &mut BashVisitor {});
 }

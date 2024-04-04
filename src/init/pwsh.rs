@@ -14,5 +14,5 @@ impl AliasVisitor for PwshVisitor {
 pub fn init(config: AliasConfig) {
     println!("{PWSH_SCRIPT}");
 
-    config.visit_aliases("powershell", PwshVisitor {});
+    config.visit_aliases("powershell", &mut PwshVisitor {});
 }
