@@ -34,6 +34,14 @@ Add this into your `.bashrc`.
 eval "$(als init bash)"
 ```
 
+### fish
+
+Add this into your `config.fish`.
+
+```shell
+als init fish | source
+```
+
 ## Alias config
 
 Put a config file in `~/.config/alias.toml`.

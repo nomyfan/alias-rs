@@ -17,7 +17,7 @@ fn main() -> anyhow::Result<()> {
     };
 
     let sub_command = args
-        .get(0)
+        .first()
         .ok_or_else(|| anyhow::anyhow!("Usage: als init <shell>"))?;
     match sub_command.as_ref() {
         "init" => {
