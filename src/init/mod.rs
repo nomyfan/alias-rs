@@ -1,4 +1,5 @@
 mod bash;
+mod fish;
 mod pwsh;
 mod zsh;
 
@@ -15,6 +16,9 @@ pub(crate) fn init(config: AliasConfig, args: Vec<String>) {
         }
         "bash" => {
             bash::init(config);
+        }
+        "fish" => {
+            fish::init(config);
         }
         _ => unreachable!("Unsupported shell"),
     }
